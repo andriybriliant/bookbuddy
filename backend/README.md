@@ -5,7 +5,6 @@ Backend for BookBuddy Aplication
 
 
 
-
 ## Tech Stack
 
 **Framework:** Spring boot
@@ -15,10 +14,10 @@ Backend for BookBuddy Aplication
 **Storage:** Azure blob storage
 
 
-## API Reference
+# API Reference
 
 
-### Register a user
+## Register a user
 
 ```http
   POST /auth/register
@@ -37,7 +36,7 @@ Backend for BookBuddy Aplication
 Returns a jwt token 
 
 
-### Login
+## Login
 
 ```http
   POST /auth/register
@@ -55,7 +54,7 @@ Returns a jwt token
 Returns a jwt token 
 
 
-### Get user email
+## Get user email
 
 ```http
   GET /users/me
@@ -69,7 +68,7 @@ Returns a jwt token
   example@mail.com
 ```
 
-### Delete user's own account
+## Delete user's own account
 
 ```http
   DELETE /users/me
@@ -83,7 +82,7 @@ Returns a jwt token
   Deleted a user
 ```
 
-### Get all books
+## Get all books
 
 ```http
   GET /books
@@ -130,7 +129,7 @@ Returns a jwt token
   ]
 ```
 
-### Get a book by id
+## Get a book by id
 
 ```http
   GET /books/{bookId}
@@ -161,7 +160,7 @@ Returns a jwt token
 ```
 
 
-### Create a book
+## Create a book
 
 ```http
   POST /books
@@ -178,7 +177,7 @@ Returns a jwt token
 | `tags` | `Array[string]` | **Optional**. List of tags |
 | `subjects` | `Array[string]` | **Optional**. List of subjects |
 
-#### Returns the created book document
+Returns the created book document
 
 #### Response example
 
@@ -202,7 +201,7 @@ Returns a jwt token
   ]
 ```
 
-### Get ratings for a book
+## Get ratings for a book
 
 ```http
   GET /books/{bookId}/ratings
@@ -233,7 +232,7 @@ Returns a jwt token
   ]
 ```
 
-### Post review for a book
+## Post review for a book
 
 ```http
   POST /books/{bookId}/rate
@@ -248,10 +247,10 @@ Returns a jwt token
 | `rating` | `number` | **Required**. Rating |
 | `comment` | `Array[string]` | **Optional**. Comment |
 
-#### Returns the created review document
+Returns the created review document
 
 
-### Get recommendations
+## Get recommendations
 
 ```http
   POST /books/{bookId}/rate
@@ -259,10 +258,10 @@ Returns a jwt token
 
 **Authorization needed:** yes, bearer token
 
-#### Returns a recommendations of books based on reviewed books of the user
+Returns a recommendations of books based on reviewed books of the user
 
 
-### Delete a book
+## Delete a book
 
 ```http
   DELETE /books/{bookId}
@@ -270,10 +269,10 @@ Returns a jwt token
 
 **Authorization needed:** yes, bearer token
 
-#### Returns success message if the book is successfully deleted
+Returns success message if the book is successfully deleted
 
 
-### Get user email
+## Get user email
 
 ```http
   GET /users/me
@@ -281,17 +280,7 @@ Returns a jwt token
 
 **Authorization needed:** yes, bearer token
 
-#### Returns email of the currently logged in user
-
-### Delete user account
-
-```http
-  DELETE /users/me
-```
-
-**Authorization needed:** yes, bearer token
-
-#### Returns success message if the user is successfully deleted
+Returns email of the currently logged in user
 
 
 
