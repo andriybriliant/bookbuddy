@@ -4,6 +4,7 @@ import com.bookbuddy.bookbuddy.config.JwtService;
 import com.bookbuddy.bookbuddy.dto.auth.RegisterRequest;
 import com.bookbuddy.bookbuddy.exception.InvalidRegisterRequestException;
 import com.bookbuddy.bookbuddy.model.User;
+import com.bookbuddy.bookbuddy.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,6 +21,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -33,8 +35,10 @@ public class AuthService {
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Bad credentials");
         }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Bad credentials"));
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(email);
+            return jwtService.generateToken(user);
         } else {
             throw new BadCredentialsException("Invalid user request!");
         }
@@ -46,7 +50,7 @@ public class AuthService {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRoles(request.getRoles());
+        user.setRoles("USER");
 
         userService.addUser(user);
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -20,6 +21,7 @@ public class Book {
     private String title;
     private String author;
     private List<String> tags;
+    @Indexed
     private double avgRating = 0.0;
     private int ratingsCount = 0;
     private String coverUrl;

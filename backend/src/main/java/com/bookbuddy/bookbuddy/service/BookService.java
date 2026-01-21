@@ -5,6 +5,7 @@ import com.bookbuddy.bookbuddy.dto.book.BookResponse;
 import com.bookbuddy.bookbuddy.exception.AccessDeniedException;
 import com.bookbuddy.bookbuddy.exception.BookNotFoundException;
 import com.bookbuddy.bookbuddy.exception.InvalidBookRequestException;
+import com.bookbuddy.bookbuddy.mapper.BookMapper;
 import com.bookbuddy.bookbuddy.model.Book;
 import com.bookbuddy.bookbuddy.model.Rating;
 import com.bookbuddy.bookbuddy.model.User;
@@ -46,7 +47,7 @@ public class BookService {
 
         activityLogService.logActivity(userId, ActionType.ADD_BOOK, saved.getId());
 
-        return toBookResponse(saved);
+        return BookMapper.toBookResponse(saved);
     }
 
     public String getBookCoverUrl(MultipartFile cover){
@@ -84,7 +85,7 @@ public class BookService {
 
         return books.stream()
                 .filter(b -> minRating == null || b.getAvgRating() >= minRating)
-                .map(this::toBookResponse)
+                .map(BookMapper::toBookResponse)
                 .toList();
     }
 
@@ -94,7 +95,7 @@ public class BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException(id));
 
-        return toBookResponse(book);
+        return BookMapper.toBookResponse(book);
     }
 
     @CacheEvict(value = "books", key = "#bookId")
@@ -105,7 +106,7 @@ public class BookService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if(Objects.equals(book.getCreatedByUserId(), user.getId()) || Objects.equals(user.getRoles(), "ROLES_ADMIN")){
+        if(Objects.equals(book.getCreatedByUserId(), user.getId()) || Objects.equals(user.getRoles(), "ADMIN")){
             bookRepository.deleteById(book.getId());
             ratingRepository.deleteAllByBookId(book.getId());
 
@@ -133,7 +134,7 @@ public class BookService {
                 .distinct()
                 .toList();
 
-        return bookRepositoryCustom.recommendBooks(preferredTags, likedBookIds).stream().map(this::toBookResponse).toList();
+        return bookRepositoryCustom.recommendBooks(preferredTags, likedBookIds).stream().map(BookMapper::toBookResponse).toList();
     }
 
     private boolean validateBookCreateRequest(BookCreateRequest book){
@@ -144,17 +145,5 @@ public class BookService {
             return false;
         }
         return true;
-    }
-
-    private BookResponse toBookResponse(Book book) {
-        BookResponse dto = new BookResponse();
-        dto.setId(book.getId());
-        dto.setTitle(book.getTitle());
-        dto.setAuthor(book.getAuthor());
-        dto.setTags(book.getTags());
-        dto.setAvgRating(book.getAvgRating());
-        dto.setRatingsCount(book.getRatingsCount());
-        dto.setCoverUrl(book.getCoverUrl());
-        return dto;
     }
 }

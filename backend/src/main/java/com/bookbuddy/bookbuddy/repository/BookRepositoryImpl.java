@@ -30,6 +30,15 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
     }
 
     @Override
+    public void updateRatingsCount(String bookId, int count){
+        Query query = new Query(Criteria.where("_id").is(bookId));
+        Update update = new Update()
+                .set("ratingsCount", count);
+
+        mongoTemplate.updateFirst(query, update, Book.class);
+    }
+
+    @Override
     public List<Book> recommendBooks(
             List<String> tags,
             List<String> excludedBookIds

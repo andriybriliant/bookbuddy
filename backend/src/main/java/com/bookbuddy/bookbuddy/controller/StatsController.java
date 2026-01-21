@@ -1,6 +1,9 @@
 package com.bookbuddy.bookbuddy.controller;
 
 import com.bookbuddy.bookbuddy.dto.book.BookResponse;
+import com.bookbuddy.bookbuddy.dto.book.TagCountResponse;
+import com.bookbuddy.bookbuddy.dto.user.TopUserWithDetailsResponse;
+import com.bookbuddy.bookbuddy.model.User;
 import com.bookbuddy.bookbuddy.service.StatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,18 +26,13 @@ public class StatsController {
     }
 
     @GetMapping("/most-active-users")
-    @PreAuthorize("hasAuthority('ROLES_ADMIN')")
-    public List<Map<String, Object>> getMostActiveUsers() {
+    //@PreAuthorize("hasAuthority('ROLES_ADMIN')")
+    public List<TopUserWithDetailsResponse> getMostActiveUsers() {
         return statsService.getMostActiveUsers();
     }
 
-    @GetMapping("/average-rating-per-book")
-    public List<Map<String, Object>> getAverageRatingPerBook() {
-        return statsService.getAverageRatingPerBook();
-    }
-
     @GetMapping("/most-popular-tags")
-    public List<Map<String, Object>> getMostPopularTags() {
+    public List<TagCountResponse> getMostPopularTags() {
         return statsService.getMostPopularTags();
     }
 }

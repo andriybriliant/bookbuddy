@@ -83,9 +83,8 @@ public class UserController {
         return userName;
     }
 
-    //TODO: Implement method and secure it so only admin can access it
-//    @GetMapping
-//    public List<UserResponse> getUsers(Authentication authentication){
-//        return userService.getAllUsers();
-//    }
+    @GetMapping
+    public List<UserResponse> getAllUsers(Authentication authentication){
+        return userService.getAllUsers();
+    }
 }

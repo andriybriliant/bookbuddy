@@ -19,5 +19,5 @@ public class Rating {
     private String userId;
     private int rating;
     private String comment;
-    private Instant createdAt;
+    private Instant updatedAt;
 }
