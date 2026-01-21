@@ -12,8 +12,6 @@ import com.bookbuddy.bookbuddy.model.User;
 import com.bookbuddy.bookbuddy.model.enums.ActionType;
 import com.bookbuddy.bookbuddy.repository.*;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,10 +29,15 @@ public class BookService {
     private final BookRepositoryImpl bookRepositoryCustom;
     private final BlobStorageService blobStorageService;
 
-    public BookResponse createBook(BookCreateRequest request, String userId, MultipartFile cover){
+    public BookResponse createBook(BookCreateRequest request, String userEmail, MultipartFile cover){
         if(!validateBookCreateRequest(request)){
             throw new InvalidBookRequestException("Invalid book create body");
         }
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String userId = user.getId();
+
         Book book = new Book();
         book.setTitle(request.getTitle());
         book.setAuthor(request.getAuthor());
@@ -89,7 +92,7 @@ public class BookService {
                 .toList();
     }
 
-    @Cacheable(value = "books", key = "#id")
+    //@Cacheable(value = "books", key = "#id")
     public BookResponse getBookById(String id){
         System.out.println("Cache");
         Book book = bookRepository.findById(id)
@@ -98,7 +101,45 @@ public class BookService {
         return BookMapper.toBookResponse(book);
     }
 
-    @CacheEvict(value = "books", key = "#bookId")
+    //@CacheEvict(value = "books", key = "#bookId")
+    public BookResponse updateBook(
+            BookCreateRequest request,
+            MultipartFile cover,
+            String userEmail,
+            String bookId
+    ) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException(bookId));
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if(!Objects.equals(book.getCreatedByUserId(), user.getId()) && !Objects.equals(user.getRoles(), "ADMIN")){
+            System.out.println(user.getId());
+            System.out.println(user.getRoles());
+            throw new AccessDeniedException("Access denied, not authorized to update book");
+        }
+
+        if(request.getTitle() != null && !request.getTitle().isEmpty()){
+            book.setTitle(request.getTitle());
+        }
+        if(request.getAuthor() != null && !request.getAuthor().isEmpty()){
+            book.setAuthor(request.getAuthor());
+        }
+        if(request.getTags() != null){
+            book.setTags(request.getTags());
+        }
+        if(cover != null && !cover.isEmpty()){
+            String coverUrl = blobStorageService.uploadBookCover(cover);
+            book.setCoverUrl(coverUrl);
+        }
+
+        bookRepository.save(book);
+
+        return BookMapper.toBookResponse(book);
+    }
+
+    //@CacheEvict(value = "books", key = "#bookId")
     public String deleteBook(String bookId, String email){
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException(bookId));

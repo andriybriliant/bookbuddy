@@ -273,4 +273,17 @@ public class BookController {
     public List<BookResponse> recommendBooks(Authentication authentication){
         return bookService.recommendBooks(authentication.getName());
     }
+
+    @PutMapping(
+            value = "/{bookId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public BookResponse updateBook(
+            @PathVariable String bookId,
+            @RequestPart("book") BookCreateRequest book,
+            @RequestPart(value = "cover", required = false) MultipartFile cover,
+            Authentication authentication
+    ){
+        return bookService.updateBook(book, cover, authentication.getName(), bookId);
+    }
 }
