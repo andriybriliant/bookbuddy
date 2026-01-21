@@ -78,13 +78,12 @@ public class UserController {
             )
     })
     @GetMapping("/me")
-    public String user(Authentication authentication){
-        String userName = authentication.getName();
-        return userName;
+    public UserResponse user(Authentication authentication){
+        return userService.getCurrentUser(authentication);
     }
 
     @GetMapping
-    public List<UserResponse> getAllUsers(Authentication authentication){
+    public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
 }

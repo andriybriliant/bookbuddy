@@ -5,6 +5,7 @@ import com.bookbuddy.bookbuddy.model.User;
 import com.bookbuddy.bookbuddy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,10 +45,16 @@ public class UserService implements UserDetailsService {
         return user.get();
     }
 
-    public String addUser(User user) {
+    public void addUser(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         repository.save(user);
-        return "User added successfully!";
+    }
+
+    public UserResponse getCurrentUser(Authentication authentication) {
+        User user = repository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + authentication.getName()));
+
+        return toUserResponse(user);
     }
 
     public void deleteUser(String email){
@@ -59,6 +66,7 @@ public class UserService implements UserDetailsService {
         dto.setId(user.getId());
         dto.setRoles(user.getRoles());
         dto.setEmail(user.getEmail());
+        dto.setNameAndSurname(user.getNameAndSurname());
 
         return dto;
     }

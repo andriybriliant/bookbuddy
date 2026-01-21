@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
     @NotEmpty private String email;
     @NotEmpty private String password;
+    @NotEmpty private String nameAndSurname;
 }

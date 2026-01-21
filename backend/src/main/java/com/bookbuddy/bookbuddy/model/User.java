@@ -23,6 +23,7 @@ public class User implements UserDetails {
     @Indexed(unique = true)
     private String email;
     private String password;
+    private String nameAndSurname;
     private String roles;
 
     @Override
